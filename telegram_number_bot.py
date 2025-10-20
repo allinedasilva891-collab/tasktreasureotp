@@ -1741,13 +1741,14 @@ Please add the country name as caption when sending the file.
 **Example:**
 Send Tunisia.xlsx with caption: "Tunisia"
 """)
-        return
+            return
         
         # Validate country name
         if not re.match(r'^[a-zA-Z\s]+$', country_name):
             await update.message.reply_text("❌ Country name should only contain letters and spaces.")
             return
         
+        temp_path = None
         try:
             await update.message.reply_text("📥 **Processing file...** Please wait...")
             
@@ -1759,9 +1760,9 @@ Send Tunisia.xlsx with caption: "Tunisia"
                 temp_path = temp_file.name
                 
                 # Download file content
-            file_url = file.file_path
-            response = requests.get(file_url)
-            temp_file.write(response.content)
+                file_url = file.file_path
+                response = requests.get(file_url)
+                temp_file.write(response.content)
             
             # Validate file
             is_valid, message, valid_count = self.validate_excel_file(temp_path, country_name)
@@ -1800,10 +1801,11 @@ Send Tunisia.xlsx with caption: "Tunisia"
             logger.error(f"Document upload error: {e}")
             
             # Clean up on error
-            try:
-                os.unlink(temp_path)
-            except:
-                pass
+            if temp_path and os.path.exists(temp_path):
+                try:
+                    os.unlink(temp_path)
+                except:
+                    pass
     
     async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle text messages"""
