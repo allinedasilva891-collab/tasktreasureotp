@@ -1436,8 +1436,10 @@ If you believe this is a mistake, please contact the administrator.
     def validate_excel_file(self, file_path: str, country_name: str) -> tuple[bool, str, int]:
         """Validate uploaded Excel file format and content"""
         try:
+            logger.info(f"📊 Reading Excel file: {file_path}")
             # Read Excel file
             df = pd.read_excel(file_path)
+            logger.info(f"📊 File read successfully: {df.shape[0]} rows, {df.shape[1]} columns")
             
             # Check if file has required columns (flexible column names)
             required_columns = ['number', 'phone', 'mobile']  # Accept any of these
@@ -1752,19 +1754,26 @@ Send Tunisia.xlsx with caption: "Tunisia"
             await update.message.reply_text("📥 **Processing file...** Please wait...")
             
             # Download file
+            await update.message.reply_text("📥 **Downloading file...**")
             file = await context.bot.get_file(document.file_id)
             
             # Create temporary file
             with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
                 temp_path = temp_file.name
                 
-                # Download file content
+                # Download file content with timeout
                 file_url = file.file_path
-                response = requests.get(file_url)
+                logger.info(f"📥 Downloading from: {file_url}")
+                response = requests.get(file_url, timeout=30)
+                response.raise_for_status()  # Raise exception for bad status codes
                 temp_file.write(response.content)
+                logger.info(f"✅ File downloaded successfully: {len(response.content)} bytes")
             
             # Validate file
+            await update.message.reply_text("🔍 **Validating file...**")
+            logger.info(f"🔍 Validating file: {temp_path}")
             is_valid, message, valid_count = self.validate_excel_file(temp_path, country_name)
+            logger.info(f"🔍 Validation result: {is_valid}, count: {valid_count}")
             
             if not is_valid:
                 os.unlink(temp_path)
@@ -1776,6 +1785,8 @@ Send Tunisia.xlsx with caption: "Tunisia"
             action = "Updated" if country_exists else "Added"
             
             # Process file
+            await update.message.reply_text("💾 **Saving file...**")
+            logger.info(f"💾 Processing file: {temp_path} -> {country_name}")
             if self.process_country_file(temp_path, country_name):
                 await update.message.reply_text(f"""
 ✅ **Country {action} Successfully!**
