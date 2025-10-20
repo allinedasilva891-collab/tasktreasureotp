@@ -1455,7 +1455,7 @@ If you believe this is a mistake, please contact the administrator.
             
             # Check if file has data
             if len(df) == 0:
-                return
+                return False, "File is empty. Please add phone numbers.", 0
             
             # Validate phone numbers format
             valid_numbers = 0
@@ -1468,16 +1468,16 @@ If you believe this is a mistake, please contact the administrator.
                         valid_numbers += 1
             
             if valid_numbers == 0:
-                return
+                return False, "No valid phone numbers found. Please check your data.", 0
             
             success_rate = (valid_numbers / len(df)) * 100
             if success_rate < 50:
-                return
+                return False, f"Only {success_rate:.1f}% numbers are valid. Please check your data quality.", valid_numbers
             
-                return
+            return True, f"File validated successfully. {valid_numbers} valid numbers found.", valid_numbers
             
         except Exception as e:
-            return
+            return False, f"Error reading file: {str(e)}", 0
     
     def process_country_file(self, file_path: str, country_name: str) -> bool:
         """Process and save country Excel file"""
