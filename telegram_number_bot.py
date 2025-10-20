@@ -694,6 +694,23 @@ If you believe this is a mistake, please contact the administrator.
         
         logger.info(f"👤 User {user_name} ({user_id}) started the bot")
         
+        # ADMIN BYPASS - Give admin direct access without approval
+        if self.is_admin(user_id):
+            keyboard = [
+                [KeyboardButton("📱 Get Number"), KeyboardButton("🔄 Change Number")],
+                [KeyboardButton("📊 My Status"), KeyboardButton("ℹ️ Help")]
+            ]
+            reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+            
+            await update.message.reply_text(
+                f"👑 **Welcome Admin {user_name}!**\n\n"
+                f"✅ You have full access!\n\n"
+                f"🎛️ **Commands:** /approve /reject /requests /users /upload /countries /debug",
+                reply_markup=reply_markup,
+                parse_mode='Markdown'
+            )
+            return
+        
         # Check if user is approved
         if await self.is_user_approved(user_id):
             # User is approved, show main menu
