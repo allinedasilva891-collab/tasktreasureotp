@@ -1489,11 +1489,10 @@ If you believe this is a mistake, please contact the administrator.
             target_path = os.path.join(self.countries_dir, f"{country_name}.xlsx")
             
             # Backup existing file if it exists
-            backup_path = None
             if os.path.exists(target_path):
                 backup_path = f"{target_path}.backup"
-            shutil.copy2(target_path, backup_path)
-            logger.info(f"📋 Backed up existing file: {country_name}.xlsx")
+                shutil.copy2(target_path, backup_path)
+                logger.info(f"📋 Backed up existing file: {country_name}.xlsx")
             
             # Copy new file
             shutil.copy2(file_path, target_path)
