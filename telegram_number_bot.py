@@ -1516,7 +1516,7 @@ If you believe this is a mistake, please contact the administrator.
             if backup_path and os.path.exists(backup_path):
                 os.remove(backup_path)
             
-                return
+            return True
             
         except Exception as e:
             logger.error(f"❌ Error processing country file: {e}")
@@ -1529,7 +1529,7 @@ If you believe this is a mistake, please contact the administrator.
                 except Exception:
                     pass
             
-            return
+            return False
     
     async def admin_upload_country(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Admin command to upload country file"""
