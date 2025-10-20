@@ -374,35 +374,21 @@ class SimpleRequestsOTPBot:
                 return False
                 
             import telegram
-            from telegram.constants import ParseMode
             
             bot = telegram.Bot(token=self.bot_token)
             
-            # Try Markdown first, fallback to plain text if parsing fails
-            try:
-                await bot.send_message(
-                    chat_id=self.channel_id,
-                    text=message,
-                    parse_mode=ParseMode.MARKDOWN
-                )
-                logger.info("📢 Message sent to channel with Markdown")
-                return True
-            except Exception as markdown_error:
-                logger.warning(f"⚠️ Markdown failed: {markdown_error}")
-                # Fallback to plain text
-                try:
-                    await bot.send_message(
-                        chat_id=self.channel_id,
-                        text=message
-                    )
-                    logger.info("📢 Message sent to channel as plain text")
-                    return True
-                except Exception as plain_error:
-                    logger.error(f"❌ Plain text also failed: {plain_error}")
-                    return False
+            # Send as plain text (no markdown parsing issues)
+            await bot.send_message(
+                chat_id=self.channel_id,
+                text=message
+            )
+            logger.info("📢 Message sent to channel successfully")
+            return True
             
         except Exception as e:
             logger.error(f"❌ Channel send error: {e}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
             return False
 
     def escape_markdown(self, text: str) -> str:
@@ -625,30 +611,19 @@ class SimpleRequestsOTPBot:
                 elif 'twitter' in service_lower:
                     service_name = 'Twitter'
             
-            # Clean and escape text for markdown safety
-            safe_timestamp = self.escape_markdown(str(timestamp))
-            safe_number = self.escape_markdown(str(number))
-            safe_country = self.escape_markdown(str(country))
-            safe_service = self.escape_markdown(str(service_name))
-            safe_message = str(message)  # Keep message unescaped for code block
-            
-            # Make OTP clickable (safe from escaping)
-            clickable_otp = f"`{otp_code}`" if otp_code != 'Unknown' else 'Unknown'
-            
-            # Original format with escaped text
-            formatted_message = f"""🔔{safe_country} {country_flag} {safe_service} Otp Code Received Successfully\\.
+            # Simple plain text format (no markdown escaping needed)
+            formatted_message = f"""🔔{country} {country_flag} {service_name} Otp Code Received Successfully.
 
-⏰Time: {safe_timestamp}
-📱Number: {safe_number}
-🌍Country: {safe_country} {country_flag}
-💬Service: {safe_service}
-🔐Otp Code: {clickable_otp}
+⏰Time: {timestamp}
+📱Number: {number}
+🌍Country: {country} {country_flag}
+💬Service: {service_name}
+🔐Otp Code: {otp_code}
+
 📝Message:
-```
-{safe_message}
-```
+{message}
 
-Powered by @tasktreasur\\_support"""
+Powered by @tasktreasur_support"""
             
             return formatted_message
             
