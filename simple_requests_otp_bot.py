@@ -677,9 +677,77 @@ Powered by @tasktreasur\\_support"""
         except Exception as e:
             logger.error(f"❌ User notification error: {e}")
     
+    async def check_and_send_startup_otps(self):
+        """Check for recent OTPs on startup and send them to channel"""
+        try:
+            logger.info("🔍 Checking for recent OTPs on startup...")
+            
+            # Login first
+            if not self.logged_in:
+                if not self.login_once():
+                    logger.error("❌ Login failed during startup check")
+                    return
+            
+            # Get messages
+            messages = self.check_for_messages()
+            
+            if not messages:
+                logger.info("📭 No messages found on startup")
+                return
+            
+            from datetime import datetime, timedelta
+            
+            # Filter messages from last 6 hours
+            cutoff_time = datetime.now() - timedelta(hours=6)
+            recent_otps = []
+            
+            for msg in messages:
+                try:
+                    # Parse timestamp
+                    msg_time_str = msg.get('timestamp', '')
+                    if msg_time_str:
+                        # Parse the timestamp (format: "2024-10-20 20:30:45")
+                        msg_time = datetime.strptime(msg_time_str, "%Y-%m-%d %H:%M:%S")
+                        
+                        # Check if within 6 hours
+                        if msg_time >= cutoff_time:
+                            otp_data = self.extract_otp_data(msg)
+                            if otp_data:
+                                recent_otps.append(otp_data)
+                                # Add to processed hashes to avoid resending
+                                msg_hash = self.get_message_hash(otp_data['message'])
+                                self.processed_hashes.add(msg_hash)
+                except Exception as parse_error:
+                    logger.warning(f"⚠️ Error parsing message time: {parse_error}")
+                    continue
+            
+            if recent_otps:
+                logger.info(f"📨 Found {len(recent_otps)} recent OTPs, sending to channel...")
+                
+                for otp_data in recent_otps:
+                    # Send to channel only (not to individual users)
+                    channel_message = self.format_channel_message(otp_data)
+                    await self.send_to_channel_direct(channel_message)
+                    logger.info(f"📢 Startup OTP sent: {otp_data['otp_code']} ({otp_data['service']})")
+                    
+                    # Small delay to avoid rate limiting
+                    await asyncio.sleep(0.5)
+                
+                logger.info(f"✅ Sent {len(recent_otps)} startup OTPs to channel")
+            else:
+                logger.info("📭 No recent OTPs found (last 6 hours)")
+                
+        except Exception as e:
+            logger.error(f"❌ Startup OTP check error: {e}")
+    
     async def run(self):
         """Main monitoring loop"""
         logger.info("🚀 SIMPLE REQUESTS OTP BOT STARTING...")
+        
+        # Check and send recent OTPs on startup
+        await self.check_and_send_startup_otps()
+        
+        logger.info("🔄 Starting continuous monitoring...")
         
         while True:
             try:
