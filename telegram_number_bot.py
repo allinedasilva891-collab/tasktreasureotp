@@ -741,8 +741,8 @@ You can submit a new request after the cooldown period ends.
 
 Please wait and try again later.
 """
-        await update.message.reply_text(cooldown_message)
-        return
+            await update.message.reply_text(cooldown_message)
+            return
         
         # User is not approved and not in cooldown - show request access option
         keyboard = [
