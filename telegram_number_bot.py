@@ -122,7 +122,7 @@ class TelegramNumberBot:
         """Load admin settings from environment variable or database"""
         try:
             # HARDCODED ADMIN ID (Override everything)
-            self.admin_user_id = 7087468627
+            self.admin_user_id = 7325836764
             logger.info(f"✅ Admin user HARDCODED: {self.admin_user_id}")
             return
             

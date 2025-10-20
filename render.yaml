@@ -13,7 +13,7 @@ services:
       - key: BOT_TOKEN
         value: 8354306480:AAGmQbuElJ3iZV4iHiMPHvLpSo7UxrStbY0
       - key: ADMIN_USER_ID
-        value: 7087468627
+        value: 7325836764
     scaling:
       minInstances: 1
       maxInstances: 1
