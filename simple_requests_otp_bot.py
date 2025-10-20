@@ -300,8 +300,8 @@ class SimpleRequestsOTPBot:
                             
                             # Accept messages with digits (potential OTP)
                             if message and len(message) > 5:
-                                # Check if message contains digits (potential OTP)
-                                if any(char.isdigit() for char in message):
+                                # Check if message contains digits (potential OTP) - more flexible
+                                if any(char.isdigit() for char in message) and len([c for c in message if c.isdigit()]) >= 3:
                                     messages.append({
                                         'timestamp': timestamp,
                                         'number': number,

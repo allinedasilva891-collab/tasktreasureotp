@@ -1788,7 +1788,10 @@ Send Tunisia.xlsx with caption: "Tunisia"
             # Process file
             await update.message.reply_text("💾 **Saving file...**")
             logger.info(f"💾 Processing file: {temp_path} -> {country_name}")
-            if self.process_country_file(temp_path, country_name):
+            process_result = self.process_country_file(temp_path, country_name)
+            logger.info(f"💾 Process result: {process_result}")
+            
+            if process_result:
                 await update.message.reply_text(f"""
 ✅ **Country {action} Successfully!**
 
@@ -1803,6 +1806,7 @@ Send Tunisia.xlsx with caption: "Tunisia"
                 logger.info(f"📁 Admin uploaded country file: {country_name} ({valid_count} numbers)")
             else:
                 await update.message.reply_text("❌ Error processing file. Please try again.")
+                logger.error(f"❌ File processing failed for: {country_name}")
             
             # Clean up temporary file
             os.unlink(temp_path)
