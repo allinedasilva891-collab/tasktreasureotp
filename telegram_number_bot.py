@@ -573,11 +573,11 @@ If you believe this is a mistake, please contact the administrator.
                         numbers.append(clean_number)
             
             logger.info(f"📞 Loaded {len(numbers)} numbers for {country}")
-            return
+            return numbers
             
         except Exception as e:
             logger.error(f"❌ Error loading numbers for {country}: {e}")
-            return
+            return []
     
     def is_number_in_cooldown(self, number: str) -> bool:
         """Check if number is in 3-day cooldown period"""
@@ -650,7 +650,8 @@ If you believe this is a mistake, please contact the administrator.
         try:
             numbers = self.get_country_numbers(country)
             if not numbers:
-                return
+                logger.warning(f"⚠️ No numbers found for {country}")
+                return None
             
             # Shuffle numbers to distribute load and avoid conflicts
             import random
