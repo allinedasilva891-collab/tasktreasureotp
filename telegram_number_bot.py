@@ -800,8 +800,11 @@ To use this bot, you need admin approval first.
     
     async def show_countries(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Show available countries"""
+        logger.info(f"📋 Showing countries. Available: {self.available_countries}")
+        
         if not self.available_countries:
             await update.message.reply_text("❌ No countries available at the moment.")
+            logger.warning("⚠️ No countries available in list")
             return
         
         # Create inline keyboard for countries
@@ -1510,13 +1513,18 @@ If you believe this is a mistake, please contact the administrator.
             # Update available countries list
             if country_name not in self.available_countries:
                 self.available_countries.append(country_name)
-            logger.info(f"🆕 Added new country: {country_name}")
+                # Sort countries alphabetically
+                self.available_countries.sort()
+                logger.info(f"🆕 Added new country: {country_name}")
+            else:
+                logger.info(f"🔄 Updated existing country: {country_name}")
             
             # Initialize number tracking for new country
             if country_name not in self.country_number_indices:
                 self.country_number_indices[country_name] = 0
             self.assigned_numbers[country_name] = set()
             logger.info(f"🔢 Initialized number tracking for: {country_name}")
+            logger.info(f"📋 Available countries now: {self.available_countries}")
             
             # Remove backup if everything succeeded
             if backup_path and os.path.exists(backup_path):
