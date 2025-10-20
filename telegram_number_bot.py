@@ -1285,12 +1285,12 @@ If you believe this is a mistake, please contact the administrator.
         """Admin command to list pending approval requests"""
         if not self.is_admin(update.effective_user.id):
             await update.message.reply_text("❌ You are not authorized to use this command.")
-        return
+            return
         
         try:
             if not self.supabase:
                 await update.message.reply_text("❌ Database connection error.")
-            return
+                return
             
             # Get pending requests
             result = self.supabase.table('user_approval_requests').select('*').eq('status', 'pending').order('requested_at', desc=True).execute()
@@ -1319,7 +1319,7 @@ If you believe this is a mistake, please contact the administrator.
             
             message += "Use /approve <user_id> or /reject <user_id> to handle requests."
             
-        await update.message.reply_text(message, parse_mode='Markdown')
+            await update.message.reply_text(message, parse_mode='Markdown')
         except Exception as e:
             await update.message.reply_text(f"❌ Error: {e}")
             logger.error(f"Admin list requests error: {e}")
@@ -1328,12 +1328,12 @@ If you believe this is a mistake, please contact the administrator.
         """Admin command to list approved users"""
         if not self.is_admin(update.effective_user.id):
             await update.message.reply_text("❌ You are not authorized to use this command.")
-        return
+            return
         
         try:
             if not self.supabase:
                 await update.message.reply_text("❌ Database connection error.")
-            return
+                return
             
             # Get approved users
             result = self.supabase.table('approved_users').select('*').eq('is_active', True).order('approved_at', desc=True).execute()
@@ -1344,25 +1344,25 @@ If you believe this is a mistake, please contact the administrator.
             
             message = f"👥 **Approved Users ({len(result.data)}):**\n\n"
             for i, user in enumerate(result.data[:15], 1):  # Limit to 15 users
-            user_id = user['user_id']
-            name = user.get('first_name', 'N/A')
-            if user.get('last_name'):
-                name += f" {user.get('last_name')}"
-            username = user.get('username')
-            approved_at = datetime.fromisoformat(user['approved_at'].replace('Z', '+00:00')).strftime('%Y-%m-%d %H:%M')
+                user_id = user['user_id']
+                name = user.get('first_name', 'N/A')
+                if user.get('last_name'):
+                    name += f" {user.get('last_name')}"
+                username = user.get('username')
+                approved_at = datetime.fromisoformat(user['approved_at'].replace('Z', '+00:00')).strftime('%Y-%m-%d %H:%M')
                 
-            message += f"**{i}.** ID: `{user_id}`\n"
-            message += f"   👤 **Name:** {name}\n"
-            if username:
-                message += f"   🔤 **Username:** @{username}\n"
-            message += f"   ✅ **Approved:** {approved_at}\n\n"
+                message += f"**{i}.** ID: `{user_id}`\n"
+                message += f"   👤 **Name:** {name}\n"
+                if username:
+                    message += f"   🔤 **Username:** @{username}\n"
+                message += f"   ✅ **Approved:** {approved_at}\n\n"
             
             if len(result.data) > 15:
                 message += f"... and {len(result.data) - 15} more users\n\n"
             
             message += "Use /remove <user_id> to remove a user's access."
             
-        await update.message.reply_text(message, parse_mode='Markdown')
+            await update.message.reply_text(message, parse_mode='Markdown')
         except Exception as e:
             await update.message.reply_text(f"❌ Error: {e}")
             logger.error(f"Admin list users error: {e}")
@@ -1371,7 +1371,7 @@ If you believe this is a mistake, please contact the administrator.
         """Admin command to show debug information"""
         if not self.is_admin(update.effective_user.id):
             await update.message.reply_text("❌ You are not authorized to use this command.")
-        return
+            return
         
         try:
             # Check system status
@@ -1404,7 +1404,7 @@ If you believe this is a mistake, please contact the administrator.
 • Notification System: {'✅ Ready' if self.admin_user_id and self.application else '❌ Not Ready'}
 """
             
-        await update.message.reply_text(debug_info, parse_mode='Markdown')
+            await update.message.reply_text(debug_info, parse_mode='Markdown')
             logger.info(f"🔧 Admin {update.effective_user.id} requested debug info")
             
         except Exception as e:
@@ -1425,11 +1425,11 @@ If you believe this is a mistake, please contact the administrator.
             for col in df.columns:
                 if col.lower() in required_columns:
                     number_column = col
-            column_found = True
-            break
+                    column_found = True
+                    break
             
             if not column_found:
-                return
+                return False, "File must contain a column named 'Number' or 'Phone'.", 0
             
             # Check if file has data
             if len(df) == 0:
@@ -1439,11 +1439,11 @@ If you believe this is a mistake, please contact the administrator.
             valid_numbers = 0
             for idx, row in df.iterrows():
                 number = str(row[number_column]).strip()
-            if number and number != 'nan' and len(number) >= 8:
+                if number and number != 'nan' and len(number) >= 8:
                     # Basic phone number validation
-            clean_number = re.sub(r'[^\d+]', '', number)
-            if len(clean_number) >= 8:
-                valid_numbers += 1
+                    clean_number = re.sub(r'[^\d+]', '', number)
+                    if len(clean_number) >= 8:
+                        valid_numbers += 1
             
             if valid_numbers == 0:
                 return
@@ -1502,16 +1502,16 @@ If you believe this is a mistake, please contact the administrator.
                 try:
                     shutil.move(backup_path, target_path)
                     logger.info("🔄 Restored backup file due to error")
-            except Exception:
-                pass
+                except Exception:
+                    pass
             
-                return
+            return
     
     async def admin_upload_country(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Admin command to upload country file"""
-                    if not self.is_admin(update.effective_user.id):
-                        await update.message.reply_text("❌ You are not authorized to use this command.")
-                        return
+        if not self.is_admin(update.effective_user.id):
+            await update.message.reply_text("❌ You are not authorized to use this command.")
+            return
         
         await update.message.reply_text("""
 📁 **Upload Country Numbers File**
@@ -1548,51 +1548,51 @@ number
     
     async def admin_list_countries(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Admin command to list all available countries"""
-                    if not self.is_admin(update.effective_user.id):
-                        await update.message.reply_text("❌ You are not authorized to use this command.")
-        return
+        if not self.is_admin(update.effective_user.id):
+            await update.message.reply_text("❌ You are not authorized to use this command.")
+            return
         
         try:
             if not self.available_countries:
                 await update.message.reply_text("📁 No countries available.")
-            return
+                return
             
             message = f"🌍 **Available Countries ({len(self.available_countries)}):**\n\n"
             
             for i, country in enumerate(sorted(self.available_countries), 1):
                 # Get file info
-            file_path = os.path.join(self.countries_dir, f"{country}.xlsx")
-            if os.path.exists(file_path):
+                file_path = os.path.join(self.countries_dir, f"{country}.xlsx")
+                if os.path.exists(file_path):
                     # Get file stats
-            file_stat = os.stat(file_path)
-            file_size = file_stat.st_size / 1024  # KB
-            modified_time = datetime.fromtimestamp(file_stat.st_mtime).strftime('%Y-%m-%d %H:%M')
+                    file_stat = os.stat(file_path)
+                    file_size = file_stat.st_size / 1024  # KB
+                    modified_time = datetime.fromtimestamp(file_stat.st_mtime).strftime('%Y-%m-%d %H:%M')
                     
                     # Count numbers in file
-            try:
-                df = pd.read_excel(file_path)
-            number_count = len(df)
-            except:
-                number_count = "?"
+                    try:
+                        df = pd.read_excel(file_path)
+                        number_count = len(df)
+                    except:
+                        number_count = "?"
                     
                     # Check current usage
-            assigned_count = len(self.assigned_numbers.get(country, set()))
-            current_index = self.country_number_indices.get(country, 0)
+                    assigned_count = len(self.assigned_numbers.get(country, set()))
+                    current_index = self.country_number_indices.get(country, 0)
                     
-            message += f"**{i}.** 🇳🇪 **{country}**\n"
-            message += f"   📊 Numbers: {number_count} total, {assigned_count} assigned\n"
-            message += f"   📁 Size: {file_size:.1f} KB\n"
-            message += f"   🕒 Updated: {modified_time}\n"
-            message += f"   📍 Index: {current_index}\n\n"
-            else:
-                message += f"**{i}.** ❌ **{country}** (file missing)\n\n"
+                    message += f"**{i}.** 🇳🇪 **{country}**\n"
+                    message += f"   📊 Numbers: {number_count} total, {assigned_count} assigned\n"
+                    message += f"   📁 Size: {file_size:.1f} KB\n"
+                    message += f"   🕒 Updated: {modified_time}\n"
+                    message += f"   📍 Index: {current_index}\n\n"
+                else:
+                    message += f"**{i}.** ❌ **{country}** (file missing)\n\n"
             
             message += "**Commands:**\n"
             message += "• `/upload` - Upload new country file\n"
             message += "• `/delete_country <name>` - Delete country file\n"
             message += "• `/reload_countries` - Reload country list"
             
-        await update.message.reply_text(message, parse_mode='Markdown')
+            await update.message.reply_text(message, parse_mode='Markdown')
             
         except Exception as e:
             await update.message.reply_text(f"❌ Error: {e}")
@@ -1602,12 +1602,12 @@ number
         """Admin command to delete a country file"""
         if not self.is_admin(update.effective_user.id):
             await update.message.reply_text("❌ You are not authorized to use this command.")
-        return
+            return
         
         try:
             if len(context.args) != 1:
                 await update.message.reply_text("Usage: /delete_country <country_name>")
-            return
+                return
             
             country_name = context.args[0]
             file_path = os.path.join(self.countries_dir, f"{country_name}.xlsx")
@@ -1643,7 +1643,7 @@ number
             if country_name in self.assigned_numbers:
                 del self.assigned_numbers[country_name]
             
-        await update.message.reply_text(f"""
+            await update.message.reply_text(f"""
 ✅ **Country Deleted Successfully**
 
 🗑️ **Country:** {country_name}
@@ -1663,7 +1663,7 @@ The file has been backed up before deletion.
         """Admin command to reload countries from files"""
         if not self.is_admin(update.effective_user.id):
             await update.message.reply_text("❌ You are not authorized to use this command.")
-        return
+            return
         
         try:
             old_count = len(self.available_countries)
@@ -1674,7 +1674,7 @@ The file has been backed up before deletion.
             
             new_count = len(self.available_countries)
             
-        await update.message.reply_text(f"""
+            await update.message.reply_text(f"""
 🔄 **Countries Reloaded**
 
 📊 **Before:** {old_count} countries
@@ -1746,7 +1746,7 @@ Send Tunisia.xlsx with caption: "Tunisia"
             
             if not is_valid:
                 os.unlink(temp_path)
-        await update.message.reply_text(f"❌ **File Validation Failed**\n\n{message}")
+                await update.message.reply_text(f"❌ **File Validation Failed**\n\n{message}")
                 return
             
             # Check if country exists
@@ -1766,7 +1766,7 @@ Send Tunisia.xlsx with caption: "Tunisia"
 🔄 **Status:** Country is now available for users!
 """)
                 
-            logger.info(f"📁 Admin uploaded country file: {country_name} ({valid_count} numbers)")
+                logger.info(f"📁 Admin uploaded country file: {country_name} ({valid_count} numbers)")
             else:
                 await update.message.reply_text("❌ Error processing file. Please try again.")
             
@@ -1792,31 +1792,31 @@ Send Tunisia.xlsx with caption: "Tunisia"
         # Handle access request
         if text == "🔑 Request Access":
             # Check if user is already approved
-        if await self.is_user_approved(user_id):
-            await update.message.reply_text("✅ You are already approved! Use /start to access the main menu.")
-            return
+            if await self.is_user_approved(user_id):
+                await update.message.reply_text("✅ You are already approved! Use /start to access the main menu.")
+                return
             
             # Check cooldown
-        cooldown_end = await self.check_request_cooldown(user_id)
+            cooldown_end = await self.check_request_cooldown(user_id)
             if cooldown_end:
                 cooldown_remaining = cooldown_end - datetime.now()
-            hours = int(cooldown_remaining.total_seconds() // 3600)
-            minutes = int((cooldown_remaining.total_seconds() % 3600) // 60)
+                hours = int(cooldown_remaining.total_seconds() // 3600)
+                minutes = int((cooldown_remaining.total_seconds() % 3600) // 60)
                 
-        await update.message.reply_text(f"⏰ You are in cooldown. Wait {hours}h {minutes}m before requesting again.")
-        return
+                await update.message.reply_text(f"⏰ You are in cooldown. Wait {hours}h {minutes}m before requesting again.")
+                return
             
             # Create approval request
             user_data = {
-            'username': user.username,
-            'first_name': user.first_name,
-            'last_name': user.last_name
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name
             }
             
-        if await self.create_approval_request(user_id, user_data):
-            await self.notify_admin_new_request(user_id, user_data)
+            if await self.create_approval_request(user_id, user_data):
+                await self.notify_admin_new_request(user_id, user_data)
                 
-        await update.message.reply_text("""
+                await update.message.reply_text("""
 📝 **Access Request Submitted!** 📝
 
 ✅ Your request has been sent to the admin for review.
@@ -1833,7 +1833,7 @@ Please wait for admin approval. You will be notified once a decision is made.
 """)
             else:
                 await update.message.reply_text("❌ Error submitting request. Please try again later.")
-                return
+            return
         
         # Check if user is approved for all other commands
         if not await self.is_user_approved(user_id):
@@ -1844,7 +1844,7 @@ You need admin approval to use this bot.
 
 Please click "🔑 Request Access" to submit your request, or use /start to see the request menu.
 """)
-        return
+            return
         
         # Handle approved user commands
         if text == "📱 Get Number":
@@ -1884,10 +1884,10 @@ Please click "🔑 Request Access" to submit your request, or use /start to see 
                 await query.edit_message_text("❌ You are not authorized to perform this action.")
                 return
             
-        if await self.approve_user(user_id_to_approve, admin_id):
-            await self.notify_user_approval_result(user_id_to_approve, True)
-        await query.edit_message_text(f"✅ User {user_id_to_approve} has been **APPROVED** successfully!")
-            logger.info(f"✅ Admin {admin_id} approved user {user_id_to_approve}")
+            if await self.approve_user(user_id_to_approve, admin_id):
+                await self.notify_user_approval_result(user_id_to_approve, True)
+                await query.edit_message_text(f"✅ User {user_id_to_approve} has been **APPROVED** successfully!")
+                logger.info(f"✅ Admin {admin_id} approved user {user_id_to_approve}")
             else:
                 await query.edit_message_text("❌ Error approving user. Please try again.")
                 return
@@ -1900,10 +1900,10 @@ Please click "🔑 Request Access" to submit your request, or use /start to see 
                 await query.edit_message_text("❌ You are not authorized to perform this action.")
                 return
             
-        if await self.reject_user(user_id_to_reject, admin_id, "Request rejected by admin"):
-            await self.notify_user_approval_result(user_id_to_reject, False, "Request rejected by admin")
-        await query.edit_message_text(f"❌ User {user_id_to_reject} has been **REJECTED**.")
-            logger.info(f"❌ Admin {admin_id} rejected user {user_id_to_reject}")
+            if await self.reject_user(user_id_to_reject, admin_id, "Request rejected by admin"):
+                await self.notify_user_approval_result(user_id_to_reject, False, "Request rejected by admin")
+                await query.edit_message_text(f"❌ User {user_id_to_reject} has been **REJECTED**.")
+                logger.info(f"❌ Admin {admin_id} rejected user {user_id_to_reject}")
             else:
                 await query.edit_message_text("❌ Error rejecting user. Please try again.")
                 return
