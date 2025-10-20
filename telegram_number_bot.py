@@ -121,6 +121,11 @@ class TelegramNumberBot:
     def load_admin_settings(self):
         """Load admin settings from environment variable or database"""
         try:
+            # HARDCODED ADMIN ID (Override everything)
+            self.admin_user_id = 7087468627
+            logger.info(f"✅ Admin user HARDCODED: {self.admin_user_id}")
+            return
+            
             # First try to load from environment variable (for Render deployment)
             admin_user_env = os.getenv('ADMIN_USER_ID')
             if admin_user_env:
