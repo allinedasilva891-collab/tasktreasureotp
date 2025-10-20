@@ -3,7 +3,7 @@ services:
     name: otp-telegram-bot
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python run_bot.py
+    startCommand: python run_complete_bot.py
     plan: free
     region: oregon
     branch: main
@@ -12,6 +12,8 @@ services:
         value: 8080
       - key: BOT_TOKEN
         value: 8354306480:AAGmQbuElJ3iZV4iHiMPHvLpSo7UxrStbY0
+      - key: ADMIN_USER_ID
+        value: 7087468627
     scaling:
       minInstances: 1
       maxInstances: 1
