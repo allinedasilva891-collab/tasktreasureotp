@@ -295,17 +295,20 @@ class SimpleRequestsOTPBot:
                             service = str(record[3])        # Service name (CLI column)
                             message = str(record[4])
                             
-                            # Debug: Log CLI column value
-                            logger.info(f"🔍 CLI Column (Service): '{service}' for number {number}")
+                            # Debug: Log CLI column value and message
+                            logger.info(f"🔍 Service: '{service}' | Number: {number} | Message: {message[:50]}...")
                             
-                            if message and len(message) > 10 and 'code' in message.lower():
-                                messages.append({
-                                    'timestamp': timestamp,
-                                    'number': number,
-                                    'service': service,
-                                    'message': message,
-                                    'service_range': service_range
-                                })
+                            # Accept messages with digits (potential OTP)
+                            if message and len(message) > 5:
+                                # Check if message contains digits (potential OTP)
+                                if any(char.isdigit() for char in message):
+                                    messages.append({
+                                        'timestamp': timestamp,
+                                        'number': number,
+                                        'service': service,
+                                        'message': message,
+                                        'service_range': service_range
+                                    })
                         except Exception as parse_error:
                             logger.warning(f"⚠️ AJAX record parse error: {parse_error}")
                             continue
