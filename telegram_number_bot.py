@@ -1811,6 +1811,9 @@ Send Tunisia.xlsx with caption: "Tunisia"
         user_id = update.effective_user.id
         user = update.effective_user
         
+        # ADMIN BYPASS - Admin gets full access
+        is_admin = self.is_admin(user_id)
+        
         # Handle access request
         if text == "🔑 Request Access":
             # Check if user is already approved
@@ -1857,8 +1860,8 @@ Please wait for admin approval. You will be notified once a decision is made.
                 await update.message.reply_text("❌ Error submitting request. Please try again later.")
             return
         
-        # Check if user is approved for all other commands
-        if not await self.is_user_approved(user_id):
+        # Check if user is approved for all other commands (skip for admin)
+        if not is_admin and not await self.is_user_approved(user_id):
             await update.message.reply_text("""
 🔐 **Access Required**
 
@@ -1897,6 +1900,10 @@ Please click "🔑 Request Access" to submit your request, or use /start to see 
         query = update.callback_query
         await query.answer()
         
+        # ADMIN BYPASS - Admin gets full access
+        user_id = query.from_user.id
+        is_admin = self.is_admin(user_id)
+        
         # Handle admin approval/rejection actions
         if query.data.startswith("approve_"):
             user_id_to_approve = int(query.data.split("_")[1])
@@ -1930,9 +1937,8 @@ Please click "🔑 Request Access" to submit your request, or use /start to see 
                 await query.edit_message_text("❌ Error rejecting user. Please try again.")
                 return
         
-        # Check if user is approved for other callback actions
-        user_id = query.from_user.id
-        if not await self.is_user_approved(user_id):
+        # Check if user is approved for other callback actions (skip for admin)
+        if not is_admin and not await self.is_user_approved(user_id):
             await query.edit_message_text("🔐 You need admin approval to use this bot. Please request access first.")
             return
         
