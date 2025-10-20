@@ -71,6 +71,11 @@ check_*.py
 # Local chromedriver (keep for local development)
 # chromedriver.exe will be ignored on cloud but kept for local use
 
+# Countries folder (files uploaded via bot)
+Countries/
+*.xlsx
+!Countries/.gitkeep
+
 # Environment variables
 .env.local
 .env.production

@@ -84,10 +84,13 @@ class TelegramNumberBot:
             # Table doesn't exist, we'll handle it in the main app
     
     def load_countries(self):
-        """Load available countries from CSV files"""
+        """Load available countries from Excel files"""
         try:
+            # Create Countries directory if it doesn't exist
             if not os.path.exists(self.countries_dir):
-                logger.error(f"❌ Countries directory not found: {self.countries_dir}")
+                os.makedirs(self.countries_dir, exist_ok=True)
+                logger.info(f"📁 Created Countries directory: {self.countries_dir}")
+                logger.info("ℹ️  Upload country files via /upload command")
                 return
             
             self.available_countries = []
@@ -97,7 +100,10 @@ class TelegramNumberBot:
                     self.available_countries.append(country_name)
                     logger.info(f"📂 Found country: {country_name}")
             
-            logger.info(f"✅ Loaded {len(self.available_countries)} countries")
+            if len(self.available_countries) == 0:
+                logger.info("ℹ️  No country files found. Upload via /upload command")
+            else:
+                logger.info(f"✅ Loaded {len(self.available_countries)} countries")
             
         except Exception as e:
             logger.error(f"❌ Error loading countries: {e}")
