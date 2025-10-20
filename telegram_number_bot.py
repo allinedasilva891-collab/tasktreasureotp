@@ -36,8 +36,8 @@ class TelegramNumberBot:
         self.channel_id = "-1002724043027"
         
         # Supabase configuration
-        self.supabase_url = "https://wddcrtrgirhcemmobgcc.supabase.co"
-        self.supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndkZGNydHJnaXJoY2VtbW9iZ2NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUzNjA1NTYsImV4cCI6MjA3MDkzNjU1Nn0.K5vpqoc_zakEwBd96aC-drJ5OoInTSFcrMlWy7ShIyI"
+        self.supabase_url = "https://mjdlolparoxabsmgssbv.supabase.co"
+        self.supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qZGxvbHBhcm94YWJzbWdzc2J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA5NjUwMzAsImV4cCI6MjA3NjU0MTAzMH0.fKPFannajcgPdKgqmR-KOQMxOCWJ5KVmjObkjjw2TFI"
         self.supabase: Client = None
         
         # Countries directory
@@ -692,13 +692,13 @@ If you believe this is a mistake, please contact the administrator.
         # Check if user is approved
         if await self.is_user_approved(user_id):
             # User is approved, show main menu
-        keyboard = [
-            [KeyboardButton("📱 Get Number"), KeyboardButton("🔄 Change Number")],
-            [KeyboardButton("📊 My Status"), KeyboardButton("ℹ️ Help")]
-        ]
-        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-        
-        welcome_message = f"""
+            keyboard = [
+                [KeyboardButton("📱 Get Number"), KeyboardButton("🔄 Change Number")],
+                [KeyboardButton("📊 My Status"), KeyboardButton("ℹ️ Help")]
+            ]
+            reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+            
+            welcome_message = f"""
 🤖 **Welcome to TaskTreasure OTP Bot** 🤖
 
 Hi {user_name}! 👋
@@ -714,9 +714,9 @@ Hi {user_name}! 👋
 
 **Choose an option from the menu below:**
 """
-        
-        await update.message.reply_text(
-            welcome_message,
+            
+            await update.message.reply_text(
+                welcome_message,
                 reply_markup=reply_markup
             )
             return
@@ -1207,12 +1207,12 @@ From: TaskTreasure Support Team
         """Admin command to reject a user"""
         if not self.is_admin(update.effective_user.id):
             await update.message.reply_text("❌ You are not authorized to use this command.")
-        return
+            return
         
         try:
             if len(context.args) < 1:
                 await update.message.reply_text("Usage: /reject <user_id> [reason]")
-            return
+                return
             
             user_id_to_reject = int(context.args[0])
             reason = " ".join(context.args[1:]) if len(context.args) > 1 else "Request rejected by admin"
@@ -1220,8 +1220,8 @@ From: TaskTreasure Support Team
             
             if await self.reject_user(user_id_to_reject, admin_id, reason):
                 await self.notify_user_approval_result(user_id_to_reject, False, reason)
-        await update.message.reply_text(f"❌ User {user_id_to_reject} has been rejected.\nReason: {reason}")
-            logger.info(f"❌ Admin {admin_id} rejected user {user_id_to_reject} via command")
+                await update.message.reply_text(f"❌ User {user_id_to_reject} has been rejected.\nReason: {reason}")
+                logger.info(f"❌ Admin {admin_id} rejected user {user_id_to_reject} via command")
             else:
                 await update.message.reply_text("❌ Error rejecting user. User may not exist.")
         except ValueError:
@@ -1301,18 +1301,18 @@ If you believe this is a mistake, please contact the administrator.
             
             message = "📋 **Pending Approval Requests:**\n\n"
             for i, req in enumerate(result.data[:10], 1):  # Limit to 10 requests
-            user_id = req['user_id']
-            name = req.get('first_name', 'N/A')
-            if req.get('last_name'):
-                name += f" {req.get('last_name')}"
-            username = req.get('username')
-            requested_at = datetime.fromisoformat(req['requested_at'].replace('Z', '+00:00')).strftime('%Y-%m-%d %H:%M')
+                user_id = req['user_id']
+                name = req.get('first_name', 'N/A')
+                if req.get('last_name'):
+                    name += f" {req.get('last_name')}"
+                username = req.get('username')
+                requested_at = datetime.fromisoformat(req['requested_at'].replace('Z', '+00:00')).strftime('%Y-%m-%d %H:%M')
                 
-            message += f"**{i}.** ID: `{user_id}`\n"
-            message += f"   👤 **Name:** {name}\n"
-            if username:
-                message += f"   🔤 **Username:** @{username}\n"
-            message += f"   ⏰ **Requested:** {requested_at}\n\n"
+                message += f"**{i}.** ID: `{user_id}`\n"
+                message += f"   👤 **Name:** {name}\n"
+                if username:
+                    message += f"   🔤 **Username:** @{username}\n"
+                message += f"   ⏰ **Requested:** {requested_at}\n\n"
             
             if len(result.data) > 10:
                 message += f"... and {len(result.data) - 10} more requests\n\n"
