@@ -47,7 +47,9 @@ class SimpleRequestsOTPBot:
         
         # Telegram bot for channel messages
         self.bot_token = os.getenv('BOT_TOKEN')
-        self.channel_id = "-1002724043027"
+        self.channel_id = os.getenv('CHANNEL_ID', "-1002724043027")
+        logger.info(f"📢 Channel ID configured: {self.channel_id}")
+        logger.info(f"🤖 Bot token configured: {'✅ Yes' if self.bot_token else '❌ No'}")
         
         # Initialize number bot
         try:

@@ -1437,6 +1437,12 @@ If you believe this is a mistake, please contact the administrator.
         """Validate uploaded Excel file format and content"""
         try:
             logger.info(f"📊 Reading Excel file: {file_path}")
+            
+            # Check if file exists
+            if not os.path.exists(file_path):
+                logger.error(f"❌ File not found: {file_path}")
+                return False, "File not found. Please try uploading again.", 0
+            
             # Read Excel file
             df = pd.read_excel(file_path)
             logger.info(f"📊 File read successfully: {df.shape[0]} rows, {df.shape[1]} columns")
@@ -1756,19 +1762,24 @@ Send Tunisia.xlsx with caption: "Tunisia"
             
             # Download file
             await update.message.reply_text("📥 **Downloading file...**")
+            logger.info(f"📥 Getting file from Telegram: {document.file_id}")
             file = await context.bot.get_file(document.file_id)
+            logger.info(f"✅ Got file object: {file.file_path}")
             
             # Create temporary file
             with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as temp_file:
                 temp_path = temp_file.name
+                logger.info(f"📝 Created temp file: {temp_path}")
                 
                 # Download file content with timeout
                 file_url = file.file_path
                 logger.info(f"📥 Downloading from: {file_url}")
                 response = requests.get(file_url, timeout=30)
+                logger.info(f"📥 Response status: {response.status_code}")
                 response.raise_for_status()  # Raise exception for bad status codes
                 temp_file.write(response.content)
                 logger.info(f"✅ File downloaded successfully: {len(response.content)} bytes")
+                logger.info(f"✅ Temp file saved: {temp_path}")
             
             # Validate file
             await update.message.reply_text("🔍 **Validating file...**")

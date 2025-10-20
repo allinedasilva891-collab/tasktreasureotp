@@ -11,7 +11,9 @@ services:
       - key: PORT
         value: 8080
       - key: BOT_TOKEN
-        value: 8354306480:AAGmQbuElJ3iZV4iHiMPHvLpSo7UxrStbY0
+        value: 8209019507:AAGLJGEWNNJnveVpyP-kf9R8VxslgdDNKzc
+      - key: CHANNEL_ID
+        value: -1002724043027
       - key: ADMIN_USER_ID
         value: 7325836764
     scaling:

@@ -1,0 +1,28 @@
+[1mdiff --git a/telegram_number_bot.py b/telegram_number_bot.py[m
+[1mindex 43818de..43778aa 100644[m
+[1m--- a/telegram_number_bot.py[m
+[1m+++ b/telegram_number_bot.py[m
+[36m@@ -694,6 +694,23 @@[m [mIf you believe this is a mistake, please contact the administrator.[m
+         [m
+         logger.info(f"👤 User {user_name} ({user_id}) started the bot")[m
+         [m
+[32m+[m[32m        # ADMIN BYPASS - Give admin direct access without approval[m
+[32m+[m[32m        if self.is_admin(user_id):[m
+[32m+[m[32m            keyboard = [[m
+[32m+[m[32m                [KeyboardButton("📱 Get Number"), KeyboardButton("🔄 Change Number")],[m
+[32m+[m[32m                [KeyboardButton("📊 My Status"), KeyboardButton("ℹ️ Help")][m
+[32m+[m[32m            ][m
+[32m+[m[32m            reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)[m
+[32m+[m[41m            [m
+[32m+[m[32m            await update.message.reply_text([m
+[32m+[m[32m                f"👑 **Welcome Admin {user_name}!**\n\n"[m
+[32m+[m[32m                f"✅ You have full access!\n\n"[m
+[32m+[m[32m                f"🎛️ **Commands:** /approve /reject /requests /users /upload /countries /debug",[m
+[32m+[m[32m                reply_markup=reply_markup,[m
+[32m+[m[32m                parse_mode='Markdown'[m
+[32m+[m[32m            )[m
+[32m+[m[32m            return[m
+[32m+[m[41m        [m
+         # Check if user is approved[m
+         if await self.is_user_approved(user_id):[m
+             # User is approved, show main menu[m

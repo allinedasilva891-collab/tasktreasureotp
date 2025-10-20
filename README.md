@@ -19,10 +19,11 @@ pip install -r requirements.txt
 
 2. Make sure you have Chrome browser installed (for Selenium)
 
-3. Configure the bot settings in `otp_telegram_bot.py` if needed:
-   - Telegram bot token: `8354306480:AAFPh2CTRZpjOdntLM8zqdM5kNkE6fthqPw`
-   - Telegram channel: `-1002724043027`
-   - Website credentials: `Roni_dada` / `Roni_dada`
+3. Configure the bot settings via environment variables:
+   - `BOT_TOKEN` - Your Telegram bot token (from @BotFather)
+   - `CHANNEL_ID` - Your Telegram channel ID (e.g., `-1002724043027`)
+   - `ADMIN_USER_ID` - Admin Telegram user ID
+   - Website credentials are configured in the bot code
 
 ## Running the Bot
 
